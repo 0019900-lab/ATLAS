@@ -10,3 +10,4 @@ h4{margin:12px 0 4px;color:#a78bfa;border-bottom:1px solid #2d2548;padding-botto
 footer{display:flex;gap:6px;overflow-x:auto;padding:6px;background:#1a1628;height:88px;direction:ltr}
 .th{position:relative;flex:0 0 auto;border:2px solid #3d3560;border-radius:8px;background:repeating-conic-gradient(#2a2540 0 25%,#221d38 0 50%) 0 0/12px 12px;cursor:pointer}.th.on{border-color:#a78bfa}.th.off{opacity:.35}.th canvas{display:block}.th i{position:absolute;right:2px;bottom:2px;background:#6d4fd8;border-radius:6px;padding:0 4px;font-size:11px;font-style:normal}
 @media(max-width:760px){main{flex-direction:column}aside{width:auto;height:40%;border:0}}
+#cells{display:flex;flex-wrap:wrap;gap:4px;direction:ltr}.cl{border:2px solid #3d3560;border-radius:6px;cursor:pointer;background:#221d38}.cl:hover{border-color:#a78bfa}#tabs button.on{background:#6d4fd8}
