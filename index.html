@@ -1,0 +1,15 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#1a1628"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><title>Sprite Lab</title><link rel="stylesheet" href="style.css"></head><body>
+<header><input id="nm" value="animation" title="اسم الأنيميشن (اسم الملف)"><select id="pl"></select>
+<button id="bo">📂 فتح شيت</button><button id="bs">💾 حفظ</button><button id="bx" class="a">⬇ تصدير الأنيميشن</button><button id="bp">PNG</button><button id="bn">جديد</button><input type="file" id="fi" accept="image/*" hidden></header>
+<main><section id="vw"><canvas id="cv"></canvas><div class="tb"><button id="pv">⏮</button><button id="pp">⏸</button><button id="nx">⏭</button><button id="zo">−</button><button id="zi">+</button><button id="ft">ملاءمة</button><button id="z1">1:1</button></div><div id="ts"></div></section>
+<aside><div id="pn"></div><div id="fp"><h4>الفريم المحدد <span id="fn"></span></h4>
+<label><span>حجم الفريم</span><input id="fsc" type="range" min=".2" max="3" step=".01"></label>
+<label><span>إزاحة X</span><input id="fox" type="range" min="-300" max="300"></label>
+<label><span>إزاحة Y</span><input id="foy" type="range" min="-300" max="300"></label>
+<label><span>تكرار الفريم</span><input id="fho" type="number" min="1" max="30"></label>
+<label><span>مفعّل</span><input id="fon" type="checkbox"></label>
+<div class="r"><button id="b1">▶ تقديم</button><button id="b2">◀ تأخير</button><button id="b3">نسخ</button><button id="b4">حذف</button></div>
+<div class="r"><button id="u1">توحيد الحجم على هذا الفريم</button><button id="u2">محاذاة الأرض</button><button id="u3">ضبط الكل</button></div>
+<div class="r"><button id="dl">حذف المشروع المحفوظ</button></div>
+<p class="h">مفاتيح: Space تشغيل · [ ] تنقّل · الأسهم تحريك الفريم (Shift ×10)</p></div></aside></main>
+<footer id="strip"></footer><script src="app.js"></script></body></html>
