@@ -48,3 +48,4 @@ header{position:relative}.mn{position:relative}.pop{display:none;position:absolu
 #pp{background:var(--ac);border-color:var(--a2)}
 details{margin:8px 0;border:1px solid var(--bd);border-radius:12px;background:#0002}details>summary{cursor:pointer;padding:10px 12px;font-weight:600;color:var(--a2);list-style:none;display:flex;justify-content:space-between}details>summary::after{content:"▾";transition:transform .2s}details[open]>summary::after{transform:rotate(180deg)}details>summary::-webkit-details-marker{display:none}details>*:not(summary){margin-inline:10px}details>.g2{margin-bottom:10px}
 .th u{position:absolute;top:1px;right:3px;color:#ffd166;text-decoration:none;font-size:11px}
+.lb{display:flex;flex-direction:column;gap:3px;color:var(--mu);font-size:12px}.lb input,.lb select{width:100%}
