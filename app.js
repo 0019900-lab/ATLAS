@@ -4,9 +4,9 @@ const IC={open:'M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0
 const ic=(n,s=18)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n].split('M').filter(Boolean).map(d=>`<path d="M${d}"/>`).join('')}</svg>`;
 document.querySelectorAll('[data-i]').forEach(e=>e.insertAdjacentHTML('afterbegin',ic(e.dataset.i)));
 addEventListener('click',e=>{if(e.target.closest('button'))navigator.vibrate&&navigator.vibrate(6)});
-const D={Fps:12,Spd:1,Mode:'loop',Tw:'none',Bl:40,Gy:90,Gs:1,Bg:'dark',BgC:'#2a2540',Grid:true,Onion:false,Tr:0,GlC:'#a78bfa',Sh:0,Shw:80,Ol:0,OlC:'#000000',Px:false,OnN:1,TrX:false,ShC:'const',La:315,Li:0,NM:false},S={...D};
+const D={Fps:12,Spd:1,Mode:'loop',Tw:'none',Bl:40,Gy:90,Gs:1,Bg:'dark',BgC:'#2a2540',Grid:true,Onion:false,Tr:0,GlC:'#a78bfa',Sh:0,Shw:80,Ol:0,OlC:'#000000',Px:false,OnN:1,TrX:false,ShC:'const',La:315,Li:0,NM:false,Cam:false,Cw:1280,Ch:720,Pad:0},S={...D};
 const DK={Cols:4,Rows:2,KeyOn:true,Key:'#00ff00',Tol:100,Soft:30,Spill:true,Smart:true,Gap:10,Fl:true,Hole:0,Er:0,Auto:false,Dust:2,Dec:true,Norm:false,Hue:0,Sat:100},K=Object.keys(DK);
-const FD={sc:1,ox:0,oy:0,hold:1,on:true,sh:0,sq:0,rot:0,pvx:0,pvy:0,gl:0,fl:0,key:false,ft:null,ly:null,fe:null,fx:false,hx:0,hy:0,hw:0,hh:0};
+const FD={sc:1,ox:0,oy:0,hold:1,on:true,sh:0,sq:0,rot:0,pvx:0,pvy:0,gl:0,fl:0,key:false,ft:null,ly:null,fe:null,hs:0,ev:'',fx:false,hx:0,hy:0,hw:0,hh:0};
 let SH=[],act=0,F=[],sel=0,z=1,px=0,py=0,play=true,tm=0,rt,dt,last=0,rep=false,cur='[]',U=[],R=[],lt=0,fitted=0;
 const ROWS=[],refresh=()=>{ROWS.forEach(f=>f());info()},ease=t=>t*t*(3-2*t);
 const toast=m=>{const t=$('#ts');t.textContent=m;t.classList.add('s');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('s'),1800)};
@@ -16,7 +16,7 @@ function row(par,lb,o){const t=o.t||'r',l=document.createElement('div');l.classN
  const num=()=>{b=mk('input','number');b.min=o.min;b.max=o.max;b.step=o.step;b.onchange=()=>set(isNaN(parseFloat(b.value))?o.def:cl(b.value))};
  if(t=='s'){a=mk('select');a.innerHTML=o.opts.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');a.onchange=()=>set(a.value);c.append(a)}
  else if(t=='k'){a=mk('input','checkbox');a.className='sw';a.onchange=()=>set(a.checked);c.append(a)}
- else if(t=='c'){a=mk('input','color');a.oninput=()=>set(a.value);c.append(a)}
+ else if(t=='c'){a=mk('input','color');a.oninput=()=>set(a.value);c.append(a)}else if(t=='t'){a=mk('input','text');a.oninput=()=>set(a.value);a.placeholder='مثال: hit / footstep';c.append(a)}
  else if(t=='r'){a=mk('input','range');a.min=o.min;a.max=o.max;a.step=o.step;a.oninput=()=>set(+a.value);num();c.append(a,b)}
  else{num();const m=mk('button'),p=mk('button');m.innerHTML=ic('minus',14);p.innerHTML=ic('plus',14);m.onclick=()=>set(cl((+o.g()-o.step).toFixed(3)));p.onclick=()=>set(cl((+o.g()+o.step).toFixed(3)));c.append(m,b,p)}
  if(o.u){u=mk('span');u.className='u';c.append(u)}
@@ -31,13 +31,13 @@ const ms=f=>Math.round(1000*f.hold/(S.Fps*S.Spd)),pc=v=>Math.round(v*100)+'%';
 const fr=$('#fr'),pb=$('#pb'),sh=$('#sh'),vp=$('#vp');
 row(fr,'حجم الفريم',gF('sc',{min:.2,max:3,step:.01,u:v=>pc(v)}));row(fr,'إزاحة X',gF('ox',{min:-300,max:300,step:1}));row(fr,'إزاحة Y',gF('oy',{min:-300,max:300,step:1}));
 row(fr,'مدة الفريم (×)',gF('hold',{t:'n',min:.25,max:30,step:.25,chips:[1,2,3,4,6],cu:'×',u:()=>F[sel]?'= '+ms(F[sel])+' مللي':''}));
-row(fr,'اهتزاز الصدمة',gF('sh',{min:0,max:40,step:1}));row(fr,'ضغط/مط (Squash & Stretch)',gF('sq',{min:-.5,max:.5,step:.01,u:v=>Math.round(v*100)+'%'}));row(fr,'دوران °',gF('rot',{min:-90,max:90,step:1}));row(fr,'نقطة الدوران X',gF('pvx',{min:-200,max:200,step:1}));row(fr,'نقطة الدوران Y',gF('pvy',{min:-400,max:100,step:1}));row(fr,'توهج (Glow)',gF('gl',{min:0,max:60,step:1}));row(fr,'وميض أبيض (Hit Flash)',gF('fl',{min:0,max:1,step:.05,u:v=>Math.round(v*100)+'%'}));row(fr,'قلب أفقي (X)',gF('fx',{t:'k'}));row(fr,'مربع الاصطدام X',gF('hx',{t:'n',min:-800,max:800,step:1}));row(fr,'مربع الاصطدام Y',gF('hy',{t:'n',min:-800,max:800,step:1}));row(fr,'عرض المربع (0 = بدون)',gF('hw',{t:'n',min:0,max:1000,step:1}));row(fr,'ارتفاع المربع',gF('hh',{t:'n',min:0,max:1000,step:1}));row(fr,'مفعّل في التشغيل',gF('on',{t:'k'}));
+row(fr,'اهتزاز الصدمة',gF('sh',{min:0,max:40,step:1}));row(fr,'ضغط/مط (Squash & Stretch)',gF('sq',{min:-.5,max:.5,step:.01,u:v=>Math.round(v*100)+'%'}));row(fr,'دوران °',gF('rot',{min:-90,max:90,step:1}));row(fr,'نقطة الدوران X',gF('pvx',{min:-200,max:200,step:1}));row(fr,'نقطة الدوران Y',gF('pvy',{min:-400,max:100,step:1}));row(fr,'توهج (Glow)',gF('gl',{min:0,max:60,step:1}));row(fr,'وميض أبيض (Hit Flash)',gF('fl',{min:0,max:1,step:.05,u:v=>Math.round(v*100)+'%'}));row(fr,'حدث على الفريم (Event)',gF('ev',{t:'t'}));row(fr,'وقفة الضربة Hit Stop (ms)',gF('hs',{min:0,max:300,step:10}));row(fr,'قلب أفقي (X)',gF('fx',{t:'k'}));row(fr,'مربع الاصطدام X',gF('hx',{t:'n',min:-800,max:800,step:1}));row(fr,'مربع الاصطدام Y',gF('hy',{t:'n',min:-800,max:800,step:1}));row(fr,'عرض المربع (0 = بدون)',gF('hw',{t:'n',min:0,max:1000,step:1}));row(fr,'ارتفاع المربع',gF('hh',{t:'n',min:0,max:1000,step:1}));row(fr,'مفعّل في التشغيل',gF('on',{t:'k'}));
 row(pb,'FPS (فريم/ثانية)',gS('Fps',{t:'n',min:1,max:60,step:1,chips:[6,8,12,15,24,30],u:()=>'فريم/ث'}));row(pb,'السرعة',gS('Spd',{min:.1,max:3,step:.05,chips:[.5,1,1.5,2],cu:'×',u:v=>v.toFixed(2)+'×'}));
 row(pb,'ذيل الحركة (Trail)',gS('Tr',{min:0,max:8,step:1}));row(pb,'تضمين الذيل في الأطلس',gS('TrX',{t:'k'}));row(pb,'منحنى الاهتزاز',gS('ShC',{t:'s',opts:[['const','ثابت'],['fade','يتلاشى']]}));row(pb,'نمط التشغيل',gS('Mode',{t:'s',opts:[['loop','تكرار'],['pp','ذهاب وعودة'],['once','مرة واحدة']]}));
 row(pb,'الانتقال بين الفريمات',gS('Tw',{t:'s',opts:[['none','بدون (حاد)'],['fade','تلاشي تدريجي'],['move','حركة انسيابية'],['both','تلاشي + حركة']]}));row(pb,'نسبة الانتقال من مدة الفريم',gS('Bl',{min:5,max:100,step:5,u:v=>v+'%'}));
 row(sh,'أعمدة',gH('Cols',{t:'n',min:1,max:16,step:1}));row(sh,'صفوف',gH('Rows',{t:'n',min:1,max:16,step:1}));row(sh,'قص ذكي (يلحق الإفكتات الطالعة برة الخلية)',gH('Smart',{t:'k'}));row(sh,'دمج الأجزاء القريبة (px)',gH('Gap',{min:0,max:40,step:1}));row(sh,'تقسيم تلقائي بدون شبكة (شيتات غير منتظمة)',gH('Auto',{t:'k'}));row(sh,'حذف البقع الصغيرة (حجم بالبلوك 4px)',gH('Dust',{min:0,max:30,step:1}));row(sh,'تنظيف هالة الخلفية على الحواف',gH('Dec',{t:'k'}));row(sh,'توحيد ألوان الفريمات (يخفف الوميض)',gH('Norm',{t:'k'}));row(sh,'درجة اللون (Hue)',gH('Hue',{min:-180,max:180,step:1}));row(sh,'التشبع %',gH('Sat',{min:0,max:200,step:5}));
 row(sh,'إزالة الكروما',gH('KeyOn',{t:'k'}));row(sh,'حذف الخلفية المتصلة بالحافة فقط (تحمي ألوان الشخصية)',gH('Fl',{t:'k'}));row(sh,'حذف ثقوب الخلفية المحاصرة الأكبر من (px) — 0 = بدون',gH('Hole',{min:0,max:3000,step:10}));row(sh,'نحت الحواف (px)',gH('Er',{min:0,max:4,step:1}));row(sh,'لون الكروما',gH('Key',{t:'c'}));row(sh,'التسامح',gH('Tol',{min:0,max:255,step:1}));row(sh,'نعومة الحواف',gH('Soft',{min:0,max:100,step:1}));row(sh,'إزالة الانعكاس',gH('Spill',{t:'k'}));
-row(vp,'خط الأرض %',gS('Gy',{min:40,max:100,step:1}));row(vp,'الحجم العام (الكل)',gS('Gs',{min:.2,max:3,step:.01,u:v=>pc(v)}));row(vp,'الخلفية',gS('Bg',{t:'s',opts:[['dark','غامقة'],['light','فاتحة'],['chk','شطرنج'],['cus','مخصصة']]}));row(vp,'لون مخصص',gS('BgC',{t:'c'}));row(vp,'لون التوهج والذيل',gS('GlC',{t:'c'}));row(vp,'ظل تحت الشخصية %',gS('Sh',{min:0,max:100,step:1}));row(vp,'عرض الظل %',gS('Shw',{min:20,max:200,step:5}));row(vp,'حد خارجي (px)',gS('Ol',{min:0,max:4,step:1}));row(vp,'لون الحد الخارجي',gS('OlC',{t:'c'}));row(vp,'بكسل آرت (بدون تنعيم)',gS('Px',{t:'k'}));row(vp,'مسطرة وشبكة',gS('Grid',{t:'k'}));row(vp,'ظل الفريمات (قبل أحمر / بعد أخضر)',gS('Onion',{t:'k'}));row(vp,'عدد فريمات الظل',gS('OnN',{min:1,max:4,step:1}));row(vp,'اتجاه الإضاءة °',gS('La',{min:0,max:360,step:5}));row(vp,'قوة الإضاءة %',gS('Li',{min:0,max:100,step:5}));row(vp,'تصدير Normal Map مع حزمة Godot',gS('NM',{t:'k'}));
+row(vp,'خط الأرض %',gS('Gy',{min:40,max:100,step:1}));row(vp,'الحجم العام (الكل)',gS('Gs',{min:.2,max:3,step:.01,u:v=>pc(v)}));row(vp,'الخلفية',gS('Bg',{t:'s',opts:[['dark','غامقة'],['light','فاتحة'],['chk','شطرنج'],['cus','مخصصة']]}));row(vp,'لون مخصص',gS('BgC',{t:'c'}));row(vp,'لون التوهج والذيل',gS('GlC',{t:'c'}));row(vp,'ظل تحت الشخصية %',gS('Sh',{min:0,max:100,step:1}));row(vp,'عرض الظل %',gS('Shw',{min:20,max:200,step:5}));row(vp,'حد خارجي (px)',gS('Ol',{min:0,max:4,step:1}));row(vp,'لون الحد الخارجي',gS('OlC',{t:'c'}));row(vp,'بكسل آرت (بدون تنعيم)',gS('Px',{t:'k'}));row(vp,'مسطرة وشبكة',gS('Grid',{t:'k'}));row(vp,'ظل الفريمات (قبل أحمر / بعد أخضر)',gS('Onion',{t:'k'}));row(vp,'عدد فريمات الظل',gS('OnN',{min:1,max:4,step:1}));row(vp,'اتجاه الإضاءة °',gS('La',{min:0,max:360,step:5}));row(vp,'قوة الإضاءة %',gS('Li',{min:0,max:100,step:5}));row(vp,'تصدير Normal Map مع حزمة Godot',gS('NM',{t:'k'}));row(vp,'إطار الكاميرا',gS('Cam',{t:'k'}));row(vp,'عرض الكاميرا',gS('Cw',{t:'n',min:160,max:4000,step:10}));row(vp,'ارتفاع الكاميرا',gS('Ch',{t:'n',min:90,max:3000,step:10}));row(vp,'حشو الأطلس للشيدر (px)',gS('Pad',{min:0,max:32,step:2}));
 const pages=[...document.querySelectorAll('.pg')],tabs=[...document.querySelectorAll('#tn button')];
 const asd=$('aside'),mob=()=>innerWidth<=760;let tbi=0;const goTab=i=>{pages.forEach((p,k)=>p.classList.toggle('on',k==i));tabs.forEach((b,k)=>b.classList.toggle('on',k==i));if(mob())asd.classList.add('open');tbi=i};tabs.forEach((b,i)=>b.onclick=()=>{if(mob()&&asd.classList.contains('open')&&tbi==i)asd.classList.remove('open');else goTab(i)});goTab(0);asd.classList.remove('open');
 function info(){const o=F.filter(f=>f.on),T=o.reduce((s,f)=>s+ms(f),0);$('#eff').innerHTML=`السرعة الفعلية <b>${(S.Fps*S.Spd).toFixed(1)}</b> فريم/ث<br>${o.length} فريم · المدة <b>${(T/1000).toFixed(2)}</b> ثانية`;$('#hud').textContent=`${(S.Fps*S.Spd).toFixed(1)} fps · ${F.length?sel+1+'/'+F.length:'—'}`}
@@ -116,8 +116,8 @@ const order=()=>{const o=F.map((f,i)=>f.on?i:-1).filter(i=>i>=0);return S.Mode==
 const sync=()=>{$('#pp').innerHTML=ic(play?'pause':'play')},step=d=>{if(!F.length)return;play=false;sync();setSel((sel+d+F.length)%F.length)};
 $('#pp').onclick=()=>{play=!play;if(play){const o=order(),k=o.indexOf(sel);tm=0;for(let j=0;j<k;j++)tm+=dur(o[j])}sync()};$('#pv').onclick=()=>step(-1);$('#nx').onclick=()=>step(1);sync();
 function tick(t){requestAnimationFrame(tick);const dl=Math.min(100,t-last);last=t;let po=null;const o=order();
- if(play&&o.length){const T=o.reduce((s,i)=>s+dur(i),0);tm+=dl;if(S.Mode=='once'&&tm>=T){tm=T-.01;play=false;sync()}else tm%=T;let k=0,s=0;while(k<o.length-1&&tm>=s+dur(o[k])){s+=dur(o[k]);k++}
-  if(t-ht>40){ht=t;hist.push({...F[o[k]]});if(hist.length>12)hist.shift()}const u=(tm-s)/dur(o[k]),bl=S.Tw!='none'?S.Bl/100:0,nk=k+1<o.length?k+1:S.Mode=='once'?-1:0;window.gu=u;if(o[k]!=sel){setSel(o[k]);if(F[o[k]].fe)FXR.push({e:F[o[k]].fe,t})}
+ if(play&&o.length){const T=o.reduce((s,i)=>s+dur(i),0);if(t>=hsUntil)tm+=dl;if(S.Mode=='once'&&tm>=T){tm=T-.01;play=false;sync()}else tm%=T;let k=0,s=0;while(k<o.length-1&&tm>=s+dur(o[k])){s+=dur(o[k]);k++}
+  if(t-ht>40){ht=t;hist.push({...F[o[k]]});if(hist.length>12)hist.shift()}const u=(tm-s)/dur(o[k]),bl=S.Tw!='none'?S.Bl/100:0,nk=k+1<o.length?k+1:S.Mode=='once'?-1:0;window.gu=u;if(o[k]!=sel){setSel(o[k]);if(F[o[k]].fe)FXR.push({e:F[o[k]].fe,t});if(F[o[k]].hs)hsUntil=t+F[o[k]].hs;if(F[o[k]].ev)toast('◉ '+F[o[k]].ev)}
   po={w:bl&&nk>=0&&o.length>1&&u>1-bl?ease((u-(1-bl))/bl):0,n:nk>=0?F[o[nk]]:null}}
  if(!play)hist.length=0;draw(po)}
 new ResizeObserver(()=>{cv.width=cv.clientWidth*devicePixelRatio;cv.height=cv.clientHeight*devicePixelRatio;if(!F.length){px=cv.clientWidth/2;py=cv.clientHeight*.7}}).observe(cv);
@@ -138,7 +138,7 @@ function paint(x,f,al,p,k){p=p||f;const h=SH[f.s],r=fo(f);if(!r)return;x.save();
  if(S.Ol>0){const t=tint(r,S.OlC),o=S.Ol;for(const[a,b]of[[o,0],[-o,0],[0,o],[0,-o],[o,o],[-o,-o],[o,-o],[-o,o]])x.drawImage(t,X+a,Y+b)}if(f.gl){const t=tint(r,S.GlC);x.save();x.globalCompositeOperation='lighter';x.shadowColor=S.GlC;x.shadowBlur=f.gl*k;for(let i=0;i<3;i++)x.drawImage(t,X,Y);x.restore()}x.drawImage(lit(r),X,Y);
  if(f.fl){x.globalAlpha=al*f.fl;x.drawImage(tint(r,f.tc||'#fff'),X,Y)}if(ly&&!f.ly.u)dl();x.restore()}
 function atlas(){const o=F.filter(f=>f.on&&bb(f)),Z=S.Gs,tr=S.TrX&&S.Tr?S.Tr:0;let L=0,Rr=0,T=0,B=0,gm=0;
- const ext=f=>{const s=Z*f.sc,q=1+f.sq,a=s*q,e=s/q,c=Math.cos(f.rot*Math.PI/180),n=Math.sin(f.rot*Math.PI/180);gm=Math.max(gm,f.gl*2+f.sh*Z+S.Ol*2*Z);const ly=f.ly&&SH[f.ly.s]&&SH[f.ly.s].fr&&SH[f.ly.s].fr[f.ly.c];
+ const ext=f=>{const s=Z*f.sc,q=1+f.sq,a=s*q,e=s/q,c=Math.cos(f.rot*Math.PI/180),n=Math.sin(f.rot*Math.PI/180);gm=Math.max(gm,f.gl*2+f.sh*Z+S.Ol*2*Z,S.Pad);const ly=f.ly&&SH[f.ly.s]&&SH[f.ly.s].fr&&SH[f.ly.s].fr[f.ly.c];
   [[bb(f),SH[f.s],f.ox,f.oy],...(ly?[[ly.b,SH[f.ly.s],f.ox+f.ly.dx,f.oy+f.ly.dy]]:[])].forEach(([b,h,ox,oy])=>{const g=h.ch*S.Gy/100;[[b.x0,b.y0],[b.x1+1,b.y0],[b.x0,b.y1+1],[b.x1+1,b.y1+1]].forEach(([X,Y])=>{const u=(X-h.cw/2+ox)*a-f.pvx,v=(Y-g+oy)*e-f.pvy,x=f.pvx+u*c-v*n,y=f.pvy+u*n+v*c;L=Math.max(L,-x);Rr=Math.max(Rr,x);T=Math.max(T,-y);B=Math.max(B,y)})})};
  o.forEach((f,i)=>{ext(f);for(let k=1;k<=tr;k++)if(o[i-k])ext(o[i-k])});
  const hf=Math.ceil(Math.max(L,Rr)+gm)+4,W=hf*2,pv=Math.ceil(T+gm)+4,H=pv+Math.ceil(B+gm)+4,c=document.createElement('canvas');c.width=Math.max(1,W*o.length);c.height=H;const x=c.getContext('2d');
@@ -191,7 +191,7 @@ addEventListener('keydown',e=>{const t=e.target.tagName,ed=/INPUT|SELECT|TEXTARE
 document.querySelectorAll('.pop button').forEach(b=>b.addEventListener('click',()=>{if(b.id!='bk')closeP()}));
 
 let G=[],fdOn=true;const GC=['#ff5d73','#35d0ba','#ffd166','#4cc9f0'],ptrs=new Set();let dr=null;
-function drawG(){G.forEach(g=>{ctx.save();ctx.strokeStyle=g.c;ctx.lineWidth=1.5/z;ctx.setLineDash([8/z,5/z]);ctx.beginPath();ctx.moveTo(-1e5,g.y);ctx.lineTo(1e5,g.y);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=g.c;ctx.font=`${13/z}px sans-serif`;ctx.textAlign='start';ctx.fillText((g.lock?'🔒 ':'↕ ')+Math.round(-g.y/S.Gs)+'px',(8-px)/z,g.y-4/z);ctx.restore()});if(MP.length){ctx.save();ctx.strokeStyle=ctx.fillStyle='#fff';ctx.lineWidth=1.5/z;MP.forEach(p=>{ctx.beginPath();ctx.arc(p[0],p[1],4/z,0,7);ctx.fill()});if(MP.length>1){ctx.beginPath();ctx.moveTo(...MP[0]);ctx.lineTo(...MP[1]);ctx.stroke();const dx=MP[1][0]-MP[0][0],dy=MP[1][1]-MP[0][1];ctx.font=`${13/z}px sans-serif`;ctx.fillText(Math.round(Math.hypot(dx,dy)/S.Gs)+'px (dx '+Math.round(dx/S.Gs)+' · dy '+Math.round(-dy/S.Gs)+')',(MP[0][0]+MP[1][0])/2+6/z,(MP[0][1]+MP[1][1])/2)}ctx.restore()}}
+function drawG(){if(S.Cam){ctx.save();ctx.strokeStyle='#ffd166';ctx.lineWidth=2/z;ctx.setLineDash([10/z,6/z]);ctx.strokeRect(-S.Cw/2,-S.Ch*.85,S.Cw,S.Ch);ctx.setLineDash([]);ctx.fillStyle='#ffd166';ctx.font=`${13/z}px sans-serif`;ctx.fillText('كاميرا '+S.Cw+'×'+S.Ch,-S.Cw/2+8/z,-S.Ch*.85+18/z);ctx.restore()}G.forEach(g=>{ctx.save();ctx.strokeStyle=g.c;ctx.lineWidth=1.5/z;ctx.setLineDash([8/z,5/z]);ctx.beginPath();ctx.moveTo(-1e5,g.y);ctx.lineTo(1e5,g.y);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=g.c;ctx.font=`${13/z}px sans-serif`;ctx.textAlign='start';ctx.fillText((g.lock?'🔒 ':'↕ ')+Math.round(-g.y/S.Gs)+'px',(8-px)/z,g.y-4/z);ctx.restore()});if(MP.length){ctx.save();ctx.strokeStyle=ctx.fillStyle='#fff';ctx.lineWidth=1.5/z;MP.forEach(p=>{ctx.beginPath();ctx.arc(p[0],p[1],4/z,0,7);ctx.fill()});if(MP.length>1){ctx.beginPath();ctx.moveTo(...MP[0]);ctx.lineTo(...MP[1]);ctx.stroke();const dx=MP[1][0]-MP[0][0],dy=MP[1][1]-MP[0][1];ctx.font=`${13/z}px sans-serif`;ctx.fillText(Math.round(Math.hypot(dx,dy)/S.Gs)+'px (dx '+Math.round(dx/S.Gs)+' · dy '+Math.round(-dy/S.Gs)+')',(MP[0][0]+MP[1][0])/2+6/z,(MP[0][1]+MP[1][1])/2)}ctx.restore()}}
 vp.insertAdjacentHTML('beforeend','<h4>خطوط القياس</h4><button id="ga" data-i="plus"><span>إضافة خط ارتفاع</span></button><div id="gl"></div><p class="h">اسحب الخط في الكانفاس لأي ارتفاع · دبل-كليك عليه = قفل/فتح · الرقم = الارتفاع فوق الأرض بالبكسل</p>');$('#ga').insertAdjacentHTML('afterbegin',ic('plus'));
 function renderG(){const l=$('#gl');if(!l)return;l.innerHTML='';G.forEach((g,i)=>{const d=document.createElement('div');d.className='gr';d.innerHTML=`<input type="color" value="${g.c}"><input type="number" value="${Math.round(-g.y/S.Gs)}" step="1"><button class="lk">${ic(g.lock?'lock':'unlock',16)}</button><button class="dl">${ic('trash',16)}</button>`;const[c,n,lk,dl]=d.children;c.oninput=()=>{g.c=c.value;dirty()};n.onchange=()=>{g.y=-(+n.value||0)*S.Gs;dirty()};lk.onclick=()=>{g.lock=!g.lock;renderG();dirty()};dl.onclick=()=>{G.splice(i,1);renderG();dirty()};l.append(d)})}
 $('#ga').onclick=()=>{G.push({y:-150*S.Gs,c:GC[G.length%4],lock:false});renderG();dirty();toast('اسحب الخط لأي ارتفاع')};renderG();
@@ -219,6 +219,10 @@ extends AnimatedSprite2D
 signal shake_requested(amount: float, duration: float, fade: bool)
 signal effect_requested(info: Dictionary)
 @export var auto_effects := true
+signal frame_event(event_name: String)
+signal hit_stop_requested(duration: float)
+@export var auto_hit_stop := false
+@export var use_fx_shader := false
 var _dir := ""
 signal root_motion(delta: Vector2)
 @export_file("*.json") var json_path: String = ""
@@ -268,17 +272,24 @@ func load_atlas(path: String) -> void:
 	sprite_frames = sf
 	centered = false
 	_apply_pivot()
+	if use_fx_shader:
+		_setup_shader()
 
 func _apply_pivot() -> void:
 	if _meta.has(animation):
 		var p = _meta[animation]["pivot"]
 		offset = -Vector2(p[0], p[1])
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST if _meta[animation].get("pixel", false) else CanvasItem.TEXTURE_FILTER_PARENT_NODE
 
 func _on_frame() -> void:
 	if _meta.has(animation):
 		var f = _meta[animation]["frames"][frame]
 		if f["shake"] > 0:
 			shake_requested.emit(f["shake"], f["ms"] / 1000.0, _meta[animation].get("shake_curve", "const") == "fade")
+		if f.get("event", "") != "":
+			frame_event.emit(f["event"])
+		if f.get("hitstop", 0.0) > 0.0:
+			_hit_stop(f["hitstop"])
 		if f.get("fx") != null:
 			effect_requested.emit(f["fx"])
 			if auto_effects:
@@ -291,6 +302,40 @@ func _on_frame() -> void:
 func _on_done() -> void:
 	if _meta.has(animation) and _meta[animation].get("next", "") != "":
 		play(_meta[animation]["next"])
+
+func _hit_stop(d: float) -> void:
+	hit_stop_requested.emit(d)
+	if not auto_hit_stop:
+		return
+	Engine.time_scale = 0.05
+	await get_tree().create_timer(d, true, false, true).timeout
+	Engine.time_scale = 1.0
+
+func _setup_shader() -> void:
+	var path := _dir.path_join("atlas_fx.gdshader")
+	if ResourceLoader.exists(path):
+		var m := ShaderMaterial.new()
+		m.shader = load(path)
+		material = m
+
+func flash(duration := 0.08, color := Color.WHITE) -> void:
+	if material == null:
+		return
+	material.set_shader_parameter("flash_color", color)
+	material.set_shader_parameter("flash_amount", 1.0)
+	await get_tree().create_timer(duration).timeout
+	material.set_shader_parameter("flash_amount", 0.0)
+
+func set_outline(color: Color, width: float) -> void:
+	if material:
+		material.set_shader_parameter("outline_color", color)
+		material.set_shader_parameter("outline_width", width)
+
+func set_glow(color: Color, size: float, strength := 1.5) -> void:
+	if material:
+		material.set_shader_parameter("glow_color", color)
+		material.set_shader_parameter("glow_size", size)
+		material.set_shader_parameter("glow_strength", strength)
 
 func _spawn_fx(info: Dictionary) -> void:
 	var ef = _meta[animation]["effects"][int(info["id"])]
@@ -315,6 +360,7 @@ func _spawn_fx(info: Dictionary) -> void:
 	s.position = Vector2(info["x"] * sx, info["y"])
 	s.z_index = 1 if info["above"] else -1
 	s.flip_h = flip_h
+	s.texture_filter = texture_filter
 	add_child(s)
 	s.play("fx")
 	s.animation_finished.connect(s.queue_free)
@@ -333,8 +379,8 @@ $('#bz').onclick=async()=>{stash();const n=nm(),an=AN.filter(a=>a.F&&a.F.length)
   const bs=img.slice(0,-4),fxs=[],fxMeta=[];let nname='';const fxk=e=>{const key=(e.k||'s'+e.s)+':'+e.c+':'+e.n;let i=fxs.findIndex(q=>q.key==key);if(i<0){i=fxs.length;fxs.push({key,e})}return i},fxF=ix.map(i=>{const e=o[i].fe;return e?{id:fxk(e),x:e.x,y:e.y,above:!e.u}:null});
   for(let q=0;q<fxs.length;q++){const e=fxs[q].e,A=fxAtlas(e),fb=await new Promise(r=>A.c.toBlob(r)),nm2=bs+'_fx'+q+'.png';files.push({n:nm2,d:new Uint8Array(await fb.arrayBuffer())});fxMeta.push({id:q,image:nm2,cell:[A.W,A.H],pivot:[A.hf,A.pv],frames:e.n,fps:e.fps})}
   if(S.NM){const nc=normalCanvas(c),nb=await new Promise(r=>nc.toBlob(r));nname=bs+'_n.png';files.push({n:nname,d:new Uint8Array(await nb.arrayBuffer())})}
-  out.push({name:a.name,next:a.next||'',notes:a.notes||'',normal:nname,effects:fxMeta,shake_curve:S.ShC,image:img,size:[c.width,c.height],cell:[W,H],pivot:[hf,pv],fps:S.Fps,speed:S.Spd,mode:S.Mode,transition:{type:S.Tw,blend:S.Bl/100},frames:ix.map((i,qi)=>({fx:fxF[qi],rect:[i*W,0,W,H],ms:ms(o[i]),shake:o[i].sh||0,hit:[o[i].hx||0,o[i].hy||0,o[i].hw||0,o[i].hh||0],root:rootOf(o[i])}))})}}finally{F=F0;Object.assign(S,S0)}
- const te=new TextEncoder();files.unshift({n:n+'.atlas.json',d:te.encode(JSON.stringify({format:'atlas/2',name:n,anims:out},null,1))});files.push({n:'atlas_player.gd',d:te.encode(GD)});
+  out.push({name:a.name,next:a.next||'',notes:a.notes||'',normal:nname,pixel:!!S.Px,effects:fxMeta,shake_curve:S.ShC,image:img,size:[c.width,c.height],cell:[W,H],pivot:[hf,pv],fps:S.Fps,speed:S.Spd,mode:S.Mode,transition:{type:S.Tw,blend:S.Bl/100},frames:ix.map((i,qi)=>({fx:fxF[qi],event:o[i].ev||'',hitstop:(o[i].hs||0)/1000,rect:[i*W,0,W,H],ms:ms(o[i]),shake:o[i].sh||0,hit:[o[i].hx||0,o[i].hy||0,o[i].hw||0,o[i].hh||0],root:rootOf(o[i])}))})}}finally{F=F0;Object.assign(S,S0)}
+ const te=new TextEncoder();files.unshift({n:n+'.atlas.json',d:te.encode(JSON.stringify({format:'atlas/2',name:n,anims:out},null,1))});files.push({n:'atlas_player.gd',d:te.encode(GD)});files.push({n:'atlas_fx.gdshader',d:te.encode(SHADER)});
  {let id=0;const ex=[],sub=[],an=[];out.forEach((a,ai)=>{ex.push(`[ext_resource type="Texture2D" path="res://anim/${a.image}" id="${ai+1}"]`);const fr=a.frames.map(f=>{id++;sub.push(`[sub_resource type="AtlasTexture" id="AT_${id}"]\natlas = ExtResource("${ai+1}")\nregion = Rect2(${f.rect.join(', ')})\n`);return `{\n"duration": ${(f.ms/1000).toFixed(4)},\n"texture": SubResource("AT_${id}")\n}`}).join(', ');an.push(`{\n"frames": [${fr}],\n"loop": ${a.mode!='once'},\n"name": &"${a.name.replace(/"/g,'')}",\n"speed": 1.0\n}`)});
  files.push({n:n+'.tres',d:te.encode(`[gd_resource type="SpriteFrames" load_steps=${ex.length+sub.length+1} format=3]\n\n${ex.join('\n')}\n\n${sub.join('\n')}\n[resource]\nanimations = [${an.join(', ')}]\n`)});
  files.push({n:'README.txt',d:te.encode('ATLAS -> Godot 4\n1) ضع كل الملفات في res://anim/\n2) الطريقة السريعة: AnimatedSprite2D + sprite_frames = '+n+'.tres ، centered=false ، offset = -pivot:\n'+out.map(a=>'   '+a.name+': offset = Vector2('+(-a.pivot[0])+', '+(-a.pivot[1])+')').join('\n')+'\n3) أو استخدم atlas_player.gd (AtlasPlayer) مع json_path — بيظبط الـoffset لوحده ويدعم next وshake_requested وhitbox()\n')})}
@@ -406,10 +452,10 @@ addEventListener('click',e=>{if(lpD){e.stopImmediatePropagation();e.preventDefau
 document.addEventListener('mouseover',e=>{const el=e.target.closest&&e.target.closest('[data-tip]');if(el&&matchMedia('(hover:hover)').matches){clearTimeout(el._h);el._h=setTimeout(()=>showHint(el.dataset.tip),500);el.addEventListener('mouseleave',()=>clearTimeout(el._h),{once:true})}});
 const fq=document.createElement('div');fq.id='fq';[['left','تقديم الفريم',()=>$('#b1').click()],['right','تأخير الفريم',()=>$('#b2').click()],['copy','نسخ الفريم',()=>$('#d1').click()],['trash','حذف الفريم',()=>$('#b4').click()],['repeat','قلب الفريم يمين/شمال (X)',()=>{const f=F[sel];if(f){f.fx=!f.fx;setSel(sel);dirty()}}],['minus','تقليل مدة الفريم',()=>{const f=F[sel];if(f){f.hold=Math.max(.25,f.hold-.25);thumbs();dirty()}}],['plus','زيادة مدة الفريم',()=>{const f=F[sel];if(f){f.hold=Math.min(30,f.hold+.25);thumbs();dirty()}}],['zap','تأثير صدمة',()=>$('#u5').click()],['reset','ريسيت الفريم',()=>$('#u0').click()]].forEach(([i,t,fn])=>{const b=document.createElement('button');b.innerHTML=ic(i,16);b.title=b.dataset.tip=t;b.onclick=fn;fq.append(b)});$('#vw').append(fq);
 function grp(par,title,keys,open){const rows=[...par.children].filter(e=>e.classList.contains('rw')&&keys.some(k=>e.firstChild.textContent.includes(k)));if(!rows.length)return;const d=document.createElement('details');d.open=open;d.innerHTML=`<summary>${title}</summary>`;par.insertBefore(d,rows[0]);rows.forEach(r=>d.append(r))}
-grp(fr,'الحجم والموضع',['حجم الفريم','إزاحة','قلب','ضغط','دوران','نقطة الدوران'],true);grp(fr,'المدة والتفعيل',['مدة','مفعّل'],true);grp(fr,'التأثيرات',['اهتزاز','توهج','وميض'],false);grp(fr,'مربع الاصطدام',['مربع'],false);
+grp(fr,'الحجم والموضع',['حجم الفريم','إزاحة','قلب','ضغط','دوران','نقطة الدوران'],true);grp(fr,'المدة والتفعيل',['مدة','مفعّل'],true);grp(fr,'التأثيرات',['اهتزاز','توهج','وميض','حدث','وقفة'],false);grp(fr,'مربع الاصطدام',['مربع'],false);
 grp(pb,'السرعة والنمط',['FPS','السرعة','نمط'],true);grp(pb,'الانتقال والذيل',['الانتقال','نسبة','ذيل','الاهتزاز','الأطلس'],false);
 grp(sh,'القص والتقسيم',['أعمدة','صفوف','قص ذكي','دمج','تقسيم','البقع'],true);grp(sh,'إزالة الخلفية',['الكروما','الخلفية المتصلة','ثقوب','التسامح','نعومة','الانعكاس','نحت','هالة','توحيد ألوان'],false);grp(sh,'ألوان الشيت (تبديل الألوان)',['درجة اللون','التشبع'],false);
-grp(vp,'الأرض والخلفية',['خط الأرض','الحجم العام','الخلفية','لون مخصص','مسطرة'],true);grp(vp,'تأثيرات المعاينة',['ظل','لون التوهج','حد خارجي','لون الحد','بكسل','الإضاءة','Normal'],false);
+grp(vp,'الأرض والخلفية',['خط الأرض','الحجم العام','الخلفية','لون مخصص','مسطرة'],true);grp(vp,'تأثيرات المعاينة',['ظل','لون التوهج','حد خارجي','لون الحد','بكسل','الإضاءة','Normal','كاميرا','حشو'],false);
 function colH(pg,op){[...pg.querySelectorAll('h4')].forEach(h=>{if(h.closest('details')||h.querySelector('#fn'))return;const d=document.createElement('details'),s=document.createElement('summary');d.open=op.some(k=>h.textContent.includes(k));s.textContent=h.textContent;h.before(d);d.append(s);let n=h.nextElementSibling;while(n&&n.tagName!='H4'&&!n.classList.contains('h')&&n.tagName!='DETAILS'){const x=n.nextElementSibling;d.append(n);n=x}h.remove()})}
 colH($('#p0'),['ترتيب']);colH($('#p3'),[]);
 
@@ -453,3 +499,67 @@ $('#fxr').onclick=()=>{if(F[sel]){F[sel].fe=null;thumbs();dirty();toast('اتش�
 $('#fxp').onclick=()=>{if(!F[sel]||!F[sel].fe)return toast('ضع الإفكت على الفريم الأول');fxMode=!fxMode;cv.style.cursor=fxMode?'crosshair':'';toast(fxMode?'المس مكان الإفكت (بالنسبة لنقطة القدم)':'اتلغى')};
 $('#dps').onclick=async()=>{const h=SH[act];if(!h)return;const o={name:h.name+'_v'+(SH.length+1),data:h.data,ov:h.ov,sm:h.sm};K.forEach(k=>o[k]=h[k]);let nh=h.Hue+120;if(nh>180)nh-=360;o.Hue=nh;await addSheet(o);goTab(2);toast('اتعملت نسخة — غيّر "درجة اللون" ليها')};
 Object.entries({fxa:'ضع الإفكت (غبار/شرارات/سبرايت) على الفريم ده — بيشتغل لما الأنيميشن يوصل له',fxp:'المس مكان ظهور الإفكت على الكانفاس (بالنسبة لنقطة القدم)',fxr:'إزالة الإفكت من الفريم',dps:'نسخة من الشيت بنفس الإعدادات تغيّر لونها (للأعداء والسكينات)'}).forEach(([i,t])=>{const e=document.getElementById(i);if(e){e.title=t;e.dataset.tip=t}});
+
+let hsUntil=0,arR=0,AS=null;const AK={L:0,R:0,J:0,A:0};
+const SHADER=`shader_type canvas_item;
+// ATLAS FX: وميض + حد خارجي + توهج. خلّي في الأطلس حشو شفاف (حشو الأطلس) عشان الحد والتوهج ما يقصّوش.
+uniform vec4 tint : source_color = vec4(1.0);
+uniform vec4 flash_color : source_color = vec4(1.0);
+uniform float flash_amount : hint_range(0.0, 1.0) = 0.0;
+uniform vec4 outline_color : source_color = vec4(0.0, 0.0, 0.0, 1.0);
+uniform float outline_width : hint_range(0.0, 8.0) = 0.0;
+uniform vec4 glow_color : source_color = vec4(0.65, 0.55, 0.98, 1.0);
+uniform float glow_size : hint_range(0.0, 24.0) = 0.0;
+uniform float glow_strength : hint_range(0.0, 3.0) = 1.5;
+
+float max_alpha(sampler2D tex, vec2 uv, vec2 px, float r) {
+	float a = 0.0;
+	for (int i = 0; i < 8; i++) {
+		float ang = float(i) * 0.785398;
+		a = max(a, texture(tex, uv + vec2(cos(ang), sin(ang)) * px * r).a);
+	}
+	return a;
+}
+
+void fragment() {
+	vec2 px = TEXTURE_PIXEL_SIZE;
+	vec4 c = texture(TEXTURE, UV) * tint;
+	vec3 rgb = mix(c.rgb, flash_color.rgb, flash_amount);
+	float a = c.a;
+	vec3 acc = rgb * a;
+	if (outline_width > 0.0) {
+		float o = max_alpha(TEXTURE, UV, px, outline_width) * outline_color.a;
+		acc += outline_color.rgb * o * (1.0 - a);
+		a = a + o * (1.0 - a);
+	}
+	if (glow_size > 0.0) {
+		float g = 0.0;
+		for (int k = 1; k <= 3; k++) {
+			g += max_alpha(TEXTURE, UV, px, glow_size * float(k) / 3.0) / 3.0;
+		}
+		g = clamp(g * glow_strength, 0.0, 1.0) * glow_color.a;
+		acc += glow_color.rgb * g * (1.0 - a);
+		a = a + g * (1.0 - a);
+	}
+	COLOR = vec4(a > 0.0 ? acc / a : vec3(0.0), a);
+}
+`;
+const ar=document.createElement('div');ar.className='ov';ar.id='ar';ar.hidden=true;ar.innerHTML='<div class="arw"><canvas id="arc"></canvas><div id="arb"><button data-k="L">◀</button><button data-k="R">▶</button><button data-k="J">⤒ قفز</button><button data-k="A">⚔ ضرب</button><span id="arm"></span><button id="arx">✕ إغلاق</button></div></div>';document.body.append(ar);
+const aFind=ks=>AN.find(a=>ks.some(k=>a.name.toLowerCase().includes(k)));
+function aPrep(a){if(!a||!a.F)return null;const fs=a.F.map(f=>({...FD,...f})).filter(f=>f.on&&fo(f));if(!fs.length)return null;const as=a.S||S;let o=fs.map((_,i)=>i);if(as.Mode=='pp'&&o.length>2)o=o.concat(o.slice(1,-1).reverse());const d=o.map(i=>1000*fs[i].hold/((as.Fps||12)*(as.Spd||1)));return{fs,o,d,T:d.reduce((x,y)=>x+y,0)}}
+const aFr=(p,t,loop)=>{t=loop?t%p.T:Math.min(t,p.T-.01);let k=0,s=0;while(k<p.o.length-1&&t>=s+p.d[k]){s+=p.d[k];k++}return p.fs[p.o[k]]};
+function arStart(){stash();const m={idle:aFind(['idle','وقوف','stand'])||AN[0],run:aFind(['run','walk','جري','مشي']),jump:aFind(['jump','قفز']),attack:aFind(['attack','slash','hit','ضرب'])};AS={P:{},x:0,face:1,st:'idle',t:0};for(const k in m)AS.P[k]=aPrep(m[k]);
+ if(!AS.P.idle)return toast('مفيش فريمات — اعمل أنيميشن الأول');$('#arm').textContent=Object.keys(m).map(k=>k+': '+(m[k]?m[k].name:'—')).join(' · ')+'  (سمّي الأنيميشنات idle / run / jump / attack)';ar.hidden=false;arR=1;arLoop()}
+function arLoop(){if(!arR)return;requestAnimationFrame(arLoop);const c=$('#arc'),dp=devicePixelRatio;if(c.width!=Math.round(c.clientWidth*dp)){c.width=Math.round(c.clientWidth*dp);c.height=Math.round(c.clientHeight*dp)}const x=c.getContext('2d'),W=c.width,H=c.height,now=performance.now(),dt=Math.min(50,now-(AS.l||now))/1000;AS.l=now;
+ const mv=AK.R-AK.L;if(AS.st!='attack'&&AS.st!='jump'){if(AK.A&&AS.P.attack){AS.st='attack';AS.t=0}else if(AK.J&&AS.P.jump){AS.st='jump';AS.t=0}else{const ns=mv&&AS.P.run?'run':'idle';if(ns!=AS.st){AS.st=ns;AS.t=0}}}
+ if(mv){AS.face=mv>0?1:-1;AS.x+=mv*230*dt}AS.t+=dt*1000;let y=0;if(AS.st=='jump'){const u=AS.t/700;if(u>=1){AS.st='idle';AS.t=0}else y=-170*4*u*(1-u)}
+ if(AS.st=='attack'&&AS.P.attack&&AS.t>=AS.P.attack.T){AS.st='idle';AS.t=0}
+ const p=AS.P[AS.st]||AS.P.idle,gy=H*.78;x.setTransform(1,0,0,1,0,0);x.fillStyle='#16131f';x.fillRect(0,0,W,H);x.fillStyle='#ffffff10';x.fillRect(0,gy,W,H-gy);x.strokeStyle='#a78bfa';x.beginPath();x.moveTo(0,gy);x.lineTo(W,gy);x.stroke();
+ const f=aFr(p,AS.t,AS.st=='idle'||AS.st=='run');x.save();x.translate(W/2+AS.x*dp,gy+y*dp);x.scale(AS.face*dp,dp);paint(x,f,1,f,dp);x.restore()}
+ar.querySelectorAll('[data-k]').forEach(b=>{const k=b.dataset.k;b.onpointerdown=()=>AK[k]=1;b.onpointerup=b.onpointerleave=b.onpointercancel=()=>AK[k]=0});
+const arX=()=>{arR=0;ar.hidden=true;AK.L=AK.R=AK.J=AK.A=0};$('#arx').onclick=arX;
+const KM={ArrowLeft:'L',ArrowRight:'R',ArrowUp:'J',Space:'J',KeyZ:'A',KeyX:'A'};
+['keydown','keyup'].forEach(ev=>addEventListener(ev,e=>{if(!arR)return;if(e.code=='Escape'){arX();return}const k=KM[e.code];if(k){AK[k]=ev=='keydown'?1:0;e.preventDefault();e.stopImmediatePropagation()}},true));
+$('#ar0').onclick=arStart;
+$('#rp').onclick=()=>{z=1/devicePixelRatio;px=cv.clientWidth/2;py=cv.clientHeight*.75;toast('بكسل فعلي: 1 بكسل أطلس = 1 بكسل شاشة')};
+Object.entries({ar0:'ساحة اختبار: تحكم في الشخصية بالأسهم/Space/Z بأنيميشنات idle/run/jump/attack',rp:'معاينة بالحجم الحقيقي (1 بكسل أطلس = 1 بكسل شاشة)'}).forEach(([i,t])=>{const e=document.getElementById(i);if(e){e.title=t;e.dataset.tip=t}});
